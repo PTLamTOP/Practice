@@ -4,8 +4,8 @@ from posts.models import Post
 
 
 class View(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
-    post = models.OneToOneField(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, related_name='views')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name='views')
     views_count = models.IntegerField(default=0)
 
     def __str__(self):

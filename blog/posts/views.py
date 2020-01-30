@@ -3,6 +3,7 @@ from django.contrib import messages
 
 from .forms import PostModelForm
 from .models import Post, Author
+from analytics.models import View
 
 
 def posts_list(request):
@@ -23,8 +24,19 @@ def posts_list(request):
 
 def posts_detail(request, slug):
     unique_post = get_object_or_404(Post, slug=slug)
+    view, created = View.objects.get_or_create(
+        user=request.user,
+        post=unique_post
+    )
+    if view:
+        view.views_count += 1
+        view.save()
+    total_views = 0
+    for v in unique_post.views.all():
+        total_views += v.views_count
     context = {
-        'post': unique_post
+        'post': unique_post,
+        'views': total_views
     }
     messages.info(request, 'This is the specific detail view')
     return render(request, "posts/post_detail.html", context)
